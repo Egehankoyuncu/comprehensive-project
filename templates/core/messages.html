@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+
+{% block title %}Messages - Student Tutoring System{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                <h2>Messages</h2>
+            </div>
+            <div class="card-body">
+                {% if conversations %}
+                <div class="list-group">
+                    {% for message in conversations %}
+                    <a href="{% url 'send_message' message.sender.id %}" class="list-group-item list-group-item-action">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h5 class="mb-1">
+                                {% if message.sender == request.user %}
+                                    {{ message.receiver.username }}
+                                {% else %}
+                                    {{ message.sender.username }}
+                                {% endif %}
+                            </h5>
+                            <small>{{ message.timestamp|date:"M d, Y H:i" }}</small>
+                        </div>
+                        <p class="mb-1">{{ message.content|truncatechars:100 }}</p>
+                        {% if not message.is_read and message.receiver == request.user %}
+                            <span class="badge bg-primary">New</span>
+                        {% endif %}
+                    </a>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="alert alert-info">
+                    You don't have any messages yet.
+                    <a href="{% url 'tutor_search' %}">Find a tutor</a> to start a conversation.
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

@@ -1,0 +1,26 @@
+[
+  {
+    "id": 1,
+    "name": "John Doe",
+    "subject": "Mathematics",
+    "rating": 4.8,
+    "availability": "Monday, Wednesday, Friday",
+    "hourly_rate": 30
+  },
+  {
+    "id": 2,
+    "name": "Jane Smith",
+    "subject": "Physics",
+    "rating": 4.6,
+    "availability": "Tuesday, Thursday",
+    "hourly_rate": 28
+  },
+  {
+    "id": 3,
+    "name": "Michael Johnson",
+    "subject": "Chemistry",
+    "rating": 4.9,
+    "availability": "Weekends",
+    "hourly_rate": 35
+  }
+] 

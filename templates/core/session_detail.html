@@ -1,0 +1,125 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Session Details - Student Tutoring System{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header text-center">
+                    <h2 class="mb-0">
+                        <i class="bi bi-calendar-event me-2"></i>Session Details
+                    </h2>
+                </div>
+                <div class="card-body p-4">
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                                {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+
+                    <div class="session-info mb-4">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h5 class="mb-3">
+                                    <i class="bi bi-person me-2"></i>Student
+                                </h5>
+                                <p class="mb-3">{{ session.student.get_full_name|default:session.student.username }}</p>
+                                
+                                <h5 class="mb-3">
+                                    <i class="bi bi-calendar me-2"></i>Date & Time
+                                </h5>
+                                <p class="mb-3">
+                                    {{ session.date|date:"F d, Y" }}<br>
+                                    <small class="text-muted">
+                                        {{ session.start_time|time:"H:i" }} - {{ session.end_time|time:"H:i" }}
+                                    </small>
+                                </p>
+                            </div>
+                            <div class="col-md-6">
+                                <h5 class="mb-3">
+                                    <i class="bi bi-person-video3 me-2"></i>Tutor
+                                </h5>
+                                <p class="mb-3">{{ session.tutor.get_full_name|default:session.tutor.username }}</p>
+                                
+                                <h5 class="mb-3">
+                                    <i class="bi bi-book me-2"></i>Subject
+                                </h5>
+                                <p class="mb-3">{{ session.subject }}</p>
+                            </div>
+                        </div>
+                        
+                        <div class="text-center mt-3">
+                            <h5 class="mb-3">Status</h5>
+                            <span class="badge {% if session.status == 'pending' %}bg-warning{% elif session.status == 'confirmed' %}bg-success{% elif session.status == 'cancelled' %}bg-danger{% endif %} p-2">
+                                {{ session.status|title }}
+                            </span>
+                        </div>
+                    </div>
+
+                    {% if session.status == 'completed' and request.user == session.student and not session.review %}
+                    <div class="review-section mt-4">
+                        <h4 class="text-center mb-3">Leave a Review</h4>
+                        <form method="post" class="needs-validation" novalidate>
+                            {% csrf_token %}
+                            {{ form|crispy }}
+                            <div class="d-grid gap-2 mt-4">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-star me-2"></i>Submit Review
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                    {% endif %}
+
+                    {% if session.review %}
+                    <div class="review-display mt-4">
+                        <h4 class="text-center mb-3">Review</h4>
+                        <div class="card bg-light">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-center mb-2">
+                                    {% for i in "12345"|make_list %}
+                                    <i class="bi {% if forloop.counter <= session.review.rating %}bi-star-fill text-warning{% else %}bi-star text-muted{% endif %} mx-1"></i>
+                                    {% endfor %}
+                                </div>
+                                <p class="text-center mb-0">{{ session.review.comment }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <div class="d-grid gap-2 mt-4">
+                        {% if session.status == 'pending' %}
+                            {% if request.user == session.tutor %}
+                            <form method="post" class="d-inline">
+                                {% csrf_token %}
+                                <input type="hidden" name="action" value="confirm">
+                                <button type="submit" class="btn btn-success w-100">
+                                    <i class="bi bi-check-circle me-2"></i>Confirm Session
+                                </button>
+                            </form>
+                            {% endif %}
+                            <form method="post" class="d-inline">
+                                {% csrf_token %}
+                                <input type="hidden" name="action" value="cancel">
+                                <button type="submit" class="btn btn-danger w-100">
+                                    <i class="bi bi-x-circle me-2"></i>Cancel Session
+                                </button>
+                            </form>
+                        {% endif %}
+                        <a href="{% url 'my_sessions' %}" class="btn btn-outline-secondary">
+                            <i class="bi bi-arrow-left me-2"></i>Back to My Sessions
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %} 
